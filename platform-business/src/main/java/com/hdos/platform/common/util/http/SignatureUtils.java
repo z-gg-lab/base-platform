@@ -1,4 +1,4 @@
-package com.hdos.railway.http;
+package com.hdos.platform.common.util.http;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;

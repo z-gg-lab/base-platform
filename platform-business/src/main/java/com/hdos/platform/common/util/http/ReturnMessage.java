@@ -1,4 +1,4 @@
-package com.hdos.railway.http;
+package com.hdos.platform.common.util.http;
 
 public class ReturnMessage{	
 	public static final String E200001 = "E200001";

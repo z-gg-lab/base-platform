@@ -1,4 +1,4 @@
-package com.hdos.railway.http;
+package com.hdos.platform.common.util.http;
 
 import java.util.Locale;
 import java.util.UUID;
