@@ -1,0 +1,56 @@
+body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,button,textarea,p,th,td{margin:0;padding:0}
+fieldset,img{border:0}
+address,caption,code,em,strong,th{font-style:normal;font-weight:normal}
+h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal}
+input,button,textarea,select{font-family:inherit;font-size:inherit;font-style:inherit;font-weight:inherit;*font-size:100%;}
+body{line-height:1.5;font:14px Arial, ΢���ź�, sans-serif;}
+html, body {background:#f2f2f2; height:100%;}
+ol,ul{list-style:none}
+table{border-spacing:0}/*border-collapse:collapse*/
+caption,th{text-align:left}
+sup,sub{font-size:100%;vertical-align:baseline}
+:link,:visited ,ins{text-decoration:none;}
+a{ color:#4d74ad; text-decoration:none; cursor:pointer}
+a:hover{ color:#189e25; text-decoration:underline}
+.clear{clear:both; height:1px; overflow:hidden;}
+
+
+.login-banner{ width:100%; height:600px; background:url(../images/bg.png); fit=true}
+
+.login-form{ width:300px; padding:20px; background:#fff; position:absolute; top:220px; right:350px}
+.login-form .title{ width:100%;}
+.login-form .title span{ font-size:18px; color:#666}
+.login-form .title a{ display:inline-block; float:right;color:#286fd0}
+.login-form .title a:hover{ color:#f00;}
+
+.login-form .user{ width:300px; margin-top:20px; border:1px solid #ccc; position:relative}
+.login-form .user label{ width:36px; height:36px; position:absolute; left:0; top:0; background:url(../images/name.png) no-repeat center center}
+.login-form .user input{ width:264px; padding:10px 0 10px 36px; border:0}
+
+.login-form .password{ width:300px; margin-top:20px; border:1px solid #ccc; position:relative}
+.login-form .password label{ width:36px; height:36px; position:absolute; left:0; top:0; background:url(../images/password.png) no-repeat center center}
+.login-form .password input{ width:264px; padding:10px 0 10px 36px; border:0}
+
+.login-form .remember{ width:100%; margin-top:16px; font-size:12px}
+.login-form .remember label{ vertical-align:middle; color:#666}
+.login-form .remember label input{ width:13px; height:13px; vertical-align:middle; }
+.login-form .remember .find{ display:inline-block; float:right;color:#666}
+.login-form .remember .find:hover{ color:#f00;}
+
+.login-form .yzm{ width:100%; margin-top:18px;float:left}
+.login-form .yzm input{ width:80px; height:32px; padding:0 5px; float:left;border:1px solid #ccc; text-align:center}
+.login-form .yzm .pic{ width:90px; height:32px; float:left; margin-left:10px;}
+.login-form .yzm .pic img{ width:90px; height:32px;}
+.login-form .yzm .refresh{ display:inline-block; line-height:32px;float:right}
+.login-form .yzm .refresh a{ color:#666; font-size:12px}
+.login-form .yzm .refresh a:hover{ color:#f00;}
+
+.login-form .tips{ width:100%; float:left; color:#f00; margin-top:10px;}
+.login-form .tips span{ display:inline-block; height:15px; line-height:15px; font-size:12px}
+
+.login-form .login-btn{ width:100%; height:36px; float:left; margin-top:8px; background:#286fd0}
+.login-form .login-btn a{ display:inline-block; width:100%; line-height:36px; text-align:center; color:#fff; font-size:18px}
+.login-form .login-btn a:hover{ text-decoration:none}
+
+.footer-box{ width:990px; height:100px; margin:0 auto}
+.footer-box p{ width:100%; font-size:12px; line-height:22px; color:#666; text-align:center; padding-top:30px}

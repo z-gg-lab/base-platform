@@ -1,0 +1,121 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Test Page</title>
+<style type="text/css">
+*{ margin:0; padding:0}
+body,html{ background:#f3f2ee; height:100%}
+.error{ width:100%; height:420px; position:absolute; top:50%; margin-top:-210px; background:url(../images/404.png) center center no-repeat;font-family:微软雅黑}
+.tips{ width:100%; color:#77b3bf; font-size:22px; position:absolute; bottom:340px; text-align:center; text-indent:35px;}
+.btn{ width:100%; text-align:center; position:absolute; bottom:50px}
+.btn a{ display:inline-block; line-height:30px; height:30px; width:120px;border-radius:10px; font-size:14px; text-decoration:none;background:#6ba6b1; border:1px solid #5d959f; color:#fff; }
+.btn a:hover{ color:#5d959f; background:#f1f0ed;}
+</style>
+
+<link rel="stylesheet" type="text/css" href="/chy-web/statics/css/themes/default/easyui.css">
+<link rel="stylesheet" type="text/css" href="/chy-web/statics/css/themes/icon.css">
+<link rel="stylesheet" type="text/css" href="/chy-web/statics/css/common.css">
+<script type="text/javascript" src="/chy-web/statics/js/jquery.min.js"></script>
+<script type="text/javascript" src="/chy-web/statics/js/jquery.easyui.min.js"></script>
+<script type="text/javascript" src="/chy-web/statics/js/locale/easyui-lang-zh_CN.js"></script>
+
+<link href="//cdn.bootcss.com/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" rel="stylesheet">
+<link href="//cdn.bootcss.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
+<link rel="stylesheet" type="text/css" href="/chy-web/statics/css/uichoose/tree.css">
+<script type="text/javascript" src="/chy-web/statics/js/uichoose/tree.js"></script>
+<script type="text/javascript" src="/chy-web/statics/js/uichoose/uichoose.js"></script>
+
+<script type="text/javascript">
+	function openDialog() {
+		groot.openChooseDialog({
+			type: "customType",
+			typeName: "测试多选",
+			multi: true,
+			initItems: [{
+				id: "test001"
+			}],
+			webRoot: "/chy-web",
+			apiPath: "/user/data/choose",
+			onchange: function (data) {
+				if (data && data.length > 0) {
+					var msg = "";
+					for (var i = 0; i < data.length; i++) {
+						msg += data[i].id + ", " + data[i].name + "\n";
+					}
+					alert(msg);
+				} else {
+					alert("No data!");
+				}
+			}
+		});
+	};
+
+	function openEasyUIDlg() {
+		$('#dd').dialog('open');
+	};
+
+	function testtest() {
+		uichoose.openChooseDialog({
+			title: '自定义标题',
+			format: 'tree',
+			webRoot: '/chy-web',
+			initItems: [{
+				id: "test001"
+			},{
+				id: "quirk001",
+				name: "奇怪呀"
+			}],
+			onConfirm: function (data) {
+				if (data) {
+					alert(data.length);
+				}
+			}
+		});
+	};
+</script>
+</head>
+<body>
+<div class="row">
+<h3>测试选择组件</h3>
+<button type="button" onclick="openDialog();">打开选择窗口</button>
+<br/>
+<br/>
+<button type="button" onclick="testtest();">testtest</button>
+<br/>
+<br/>
+<button type="button" onclick="openEasyUIDlg();">打开easyui dialog</button>
+</div>
+
+<div id="dd" class="easyui-dialog" closed="true" title="My Dialog" style="width:500px;height:400px;padding:10px" toolbar="#dlg-toolbar" buttons="#dlg-buttons">
+    <div class="easyui-layout" fit="true">
+        <div region="center" border="false" style="overflow-x:hidden;">
+			<ul class="easyui-datalist" checkbox="true" singleSelect="false" border="false">
+			    <li value="AL">Alabama</li>
+			    <li value="AK">Alaska</li>
+			    <li value="AZ">Arizona</li>
+			    <li value="AR">Arkansas</li>
+			    <li value="CA">California</li>
+			    <li value="CO">Colorado</li>
+			</ul>
+        </div>
+        <div region="east" border="false" style="width:120px;padding-left:6px;">
+			<ul class="easyui-datalist" lines="true" data-options="selectOnCheck: false, onBeforeSelect: function(){return false;}">
+			    <li value="2AL">Alabama <a href="#" class="easyui-linkbutton" data-options="plain:true,iconCls:'icon-cancel'"></a></li>
+			    <li value="2AK">Alaska</li>
+			    <li value="2AZ">Arizona</li>
+			</ul>
+        </div>
+    </div>
+</div>
+<div id="dlg-toolbar">
+    <input class="easyui-textbox" data-options="iconCls:'icon-search'"></input>
+</div>
+<div id="dlg-buttons">
+    <a href="#" class="easyui-linkbutton" iconCls="icon-ok" onclick="javascript:alert('Ok')">Ok</a>
+    <a href="#" class="easyui-linkbutton" iconCls="icon-cancel" onclick="javascript:$('#dd').dialog('close')">Cancel</a>
+</div>
+
+
+</body>
+</html>

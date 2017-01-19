@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hdos.platform.base.operation.mapper.OperationMapper">
+	
+	<sql id="Column_List">
+		OPERATION_ID,MENU_ID, OPERATION_NAME, OPERATION_CODE, REMARK,STATUS, CREATE_TIME, UPDATE_TIME, SORT_NO
+	</sql>
+	
+	<sql id="Where_Clause">
+		<where>
+    		STATUS != -1
+    		<if test="condition.operationId != null">
+    			and OPERATION_ID = #{condition.operationId}
+    		</if>
+    		<if test="condition.menuId != null">
+    			and MENU_ID = #{condition.menuId}
+    		</if>
+    		<if test="condition.operationName != null">
+    			and OPERATION_NAME like #{condition.operationName}
+    		</if>
+    		<if test="condition.operationCode != null">
+    			and OPERATION_CODE like #{condition.operationCode}
+    		</if>
+    		<if test="condition.remark != null">
+    			and REMARK like #{condition.remark}
+    		</if>
+    	</where>
+	</sql>
+	
+	<select id="getById" resultType="com.hdos.platform.base.operation.model.OperationVO" parameterType="String">
+		select <include refid="Column_List" />
+    	from PUB_OPERATION where OPERATION_ID = #{roleId}
+	</select>
+
+	<select id="count" resultType="int" parameterType="map">
+		select COUNT(1)
+    	from PUB_OPERATION
+    	<include refid="Where_Clause" />
+	</select>
+
+	<select id="list" resultType="com.hdos.platform.base.operation.model.OperationVO" parameterType="map">
+		select <include refid="Column_List" />
+    	from PUB_OPERATION
+    	<include refid="Where_Clause" />
+    	ORDER BY UPDATE_TIME DESC
+	</select>
+	
+	<select id="listOperation" resultType="com.hdos.platform.base.operation.model.OperationVO" parameterType="map">
+		select <include refid="Column_List" />
+    	from PUB_OPERATION where MENU_ID in
+    		<foreach collection="condition.menuList" item="item" index="index" open="(" close=")" separator=",">   
+       				#{item.menuId} 
+			</foreach> 
+    	
+    	ORDER BY UPDATE_TIME DESC
+	</select>
+	
+	<!-- 根据父节点id和roleId获取菜单 -->
+	<select id="listOperationSelect" resultType="com.hdos.platform.base.operation.model.OperationVO" parameterType="com.hdos.platform.base.operation.model.OperationVO">
+		select m.* FROM PUB_OPERATION m,PUB_ROLE_T_OPERATION t where m.OPERATION_ID = t.OPERATION_ID and t.ROLE_ID  = #{roleId}
+	</select>
+	
+	<insert id="insert" parameterType="com.hdos.platform.base.operation.model.OperationVO">
+		insert into PUB_OPERATION (<include refid="Column_List" />)
+		values (#{operationId}, #{menuId},#{operationName},#{operationCode},#{remark}, 0,#{createTime}, #{updateTime}, #{sortNo})
+	</insert>
+
+	<update id="update" parameterType="com.hdos.platform.base.operation.model.OperationVO">
+		update PUB_OPERATION
+		<set>
+			<if test="operationName != null">OPERATION_NAME = #{operationName}, </if>
+			<if test="operationCode != null">OPERATION_CODE = #{operationCode}, </if>
+			<if test="remark != null">REMARK = #{remark}, </if>
+			<if test="sortNo != null">SORT_NO = #{sortNo}, </if>
+			UPDATE_TIME = #{updateTime}
+		</set>
+		where OPERATION_ID = #{operationId}
+	</update>
+	
+	<delete id="delete" parameterType="java.lang.String" >
+		update PUB_OPERATION set STATUS = -1 where OPERATION_ID = #{operationId}
+	</delete>
+	
+	<delete id="deleteInBulk" parameterType="java.lang.String">
+		update PUB_OPERATION set STATUS = -1 where OPERATION_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	
+	<delete id="deleteOperationRole" parameterType="java.lang.String" >
+		delete from PUB_ROLE_T_OPERATION where ROLE_ID=#{roleId}
+	</delete>
+	
+	<!-- 新增菜单角色 -->
+	<select id="insertOperationRole" parameterType="java.util.List">
+		insert into PUB_ROLE_T_OPERATION
+		
+		<foreach collection="list" item="item" separator="union all">
+        	(
+       			select #{item.roleId}, #{item.operationId} from dual
+            )
+       </foreach>
+		
+	</select>
+	
+</mapper>
