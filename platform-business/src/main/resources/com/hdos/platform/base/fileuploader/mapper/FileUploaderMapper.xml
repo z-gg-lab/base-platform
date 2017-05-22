@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hdos.platform.base.fileuploader.mapper.FileUploaderMapper">
+	
+	<sql id="Column_List">
+		FILE_ID, FILE_NAME, FILE_TYPE, FILE_SIZE, DISC_PATH, STATUS,CREATE_TIME,UPDATE_TIME,CREATER, SORT_NO
+	</sql>
+	
+	<sql id="Where_Clause">
+		<where>
+    		<if test="condition.status != null">
+    			and STATUS = #{condition.status}
+    		</if>
+    		<if test="condition.fileName != null and condition.fileName != '' ">
+    			and FILE_NAME LIKE CONCAT('%',#{condition.fileName},'%') 
+    		</if>
+    	</where>
+	</sql>
+	
+	<select id="getById" resultType="com.hdos.platform.base.fileuploader.model.FileVO" parameterType="String">
+		select <include refid="Column_List" />
+    	from PUB_FILE where FILE_ID = #{fileId}
+	</select>
+	<select id="queryIdByfileName" resultType="java.lang.String" parameterType="java.lang.String">
+		select FILE_ID
+    	from PUB_FILE where FILE_NAME = #{fileName}
+	</select>
+
+	<select id="count" resultType="int" parameterType="map">
+		select COUNT(1)
+    	from PUB_FILE
+    	<include refid="Where_Clause" />
+	</select>
+
+	<select id="list" resultType="com.hdos.platform.base.fileuploader.model.FileVO" parameterType="map">
+		select <include refid="Column_List" />
+    	from PUB_FILE
+    	<include refid="Where_Clause" />
+    	ORDER BY UPDATE_TIME DESC
+	</select>
+
+	<select id="queryFilePath" resultType="com.hdos.platform.base.fileuploader.model.FileVO" parameterType="com.hdos.platform.base.fileuploader.model.FileVO">
+		select <include refid="Column_List" />
+    	from PUB_FILE
+    	where FILE_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	
+	<insert id="insert" parameterType="com.hdos.platform.base.fileuploader.model.FileVO">
+		insert into PUB_FILE (<include refid="Column_List" />)
+		values (#{fileId}, #{fileName}, #{fileType},#{fileSize}, #{discPath}, 0,#{createTime}, #{updateTime}, #{creater}, #{sortNo})
+	</insert>
+
+	<update id="update" parameterType="com.hdos.platform.base.fileuploader.model.FileVO">
+		update PUB_FILE
+		<set>
+			<if test="fileName != null">FILE_NAME = #{fileName},</if>
+			<if test="sortNo != null">SORT_NO = #{sortNo}, </if>
+			<if test="fileType != null">FILE_TYPE = #{fileType},</if>
+			<if test="discPath != null">DISC_PATH = #{discPath}, </if>
+			<if test="sortNo != null">SORT_NO = #{sortNo}, </if>
+			UPDATE_TIME = #{updateTime}
+		</set>
+		where FILE_ID = #{fileId}
+	</update>
+	
+	<delete id="delete" parameterType="java.lang.String" >
+		update PUB_FILE set STATUS = -1 where FILE_ID = #{fileId}
+	</delete>
+	
+	<delete id="deleteInBulk" parameterType="java.lang.String">
+		update PUB_FILE set STATUS = -1 where FILE_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+</mapper>

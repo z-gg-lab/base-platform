@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hdos.platform.base.role.mapper.RoleMapper">
+	
+	<sql id="Column_List">
+		ROLE_ID, ROLE_NAME, REMARK, STATUS, CREATE_TIME, UPDATE_TIME, SORT_NO
+	</sql>
+	
+	<sql id="Where_Clause_two">
+		<where>
+    		STATUS != -1
+    			and ROLE_ID NOT IN (select ROLE_ID FROM PUB_USER_R_ROLE WHERE USER_ID = #{condition.userId})
+    	</where>
+	</sql>
+	
+		<sql id="Where_Clause">
+		<where>
+    		STATUS != -1
+    		<if test="condition.roleId != null">
+    			and ROLE_ID = #{condition.roleId}
+    		</if>
+    		<if test="condition.roleName != null">
+    			and ROLE_NAME like CONCAT(CONCAT('%', #{condition.roleName}), '%')
+    		</if>
+    		<if test="condition.remark != null">
+    			and REMARK = #{condition.remark}
+    		</if>
+    	</where>
+	</sql>
+	<select id="queryRoleByuserAccount"  resultType="java.lang.String" parameterType="java.lang.String">
+		SELECT c.ROLE_NAME FROM PUB_USER a, PUB_USER_R_ROLE b,PUB_ROLE c WHERE a.USER_ACCOUNT = #{userAccount} and a.USER_ID = b.USER_ID and c.ROLE_ID = b.ROLE_ID
+	</select>
+	
+	<select id="queryOperationByuserAccount"  resultType="java.lang.String" parameterType="java.lang.String">
+		SELECT OPERATION_CODE FROM PUB_USER a, PUB_USER_R_ROLE b,PUB_ROLE c,PUB_OPERATION d,PUB_ROLE_T_OPERATION e WHERE d.STATUS > -1 and d.OPERATION_ID = e.OPERATION_ID and e.ROLE_ID = c.ROLE_ID and a.USER_ACCOUNT = #{userAccount} and a.USER_ID = b.USER_ID and c.ROLE_ID = b.ROLE_ID
+	</select>
+	
+	
+	<select id="getById" resultType="com.hdos.platform.base.role.model.RoleVO" parameterType="String">
+		select <include refid="Column_List" />
+    	from PUB_ROLE where ROLE_ID = #{roleId}
+	</select>
+
+	<select id="count" resultType="int" parameterType="map">
+		select COUNT(1)
+    	from PUB_ROLE
+    	<include refid="Where_Clause" />
+	</select>
+
+	<select id="countUserRole" resultType="int" parameterType="map">
+		select COUNT(1)
+    	from PUB_ROLE
+    	<where>
+    		STATUS != -1
+    			and ROLE_ID NOT IN (select ROLE_ID FROM PUB_USER_R_ROLE WHERE USER_ID = #{userId})
+    	</where>
+	</select>
+
+	<select id="verifyRepeat" resultType="int" parameterType="java.lang.String">
+		select COUNT(1)
+		from PUB_ROLE
+		where ROLE_NAME = #{roleName} and STATUS >= 0
+	</select>
+	
+	<select id="list" resultType="com.hdos.platform.base.role.model.RoleVO" parameterType="map">
+		select <include refid="Column_List" />
+    	from PUB_ROLE
+    	<include refid="Where_Clause" />
+    	ORDER BY UPDATE_TIME DESC
+	</select>
+	
+	<insert id="insert" parameterType="com.hdos.platform.base.role.model.RoleVO">
+		insert into PUB_ROLE (<include refid="Column_List" />)
+		values (#{roleId}, #{roleName}, #{remark}, 0, #{createTime},#{updateTime}, #{sortNo})
+	</insert>
+
+	<update id="update" parameterType="com.hdos.platform.base.role.model.RoleVO">
+		update PUB_ROLE
+		<set>
+			<if test="roleName != null">ROLE_NAME = #{roleName}, </if>
+			<if test="remark != null">REMARK = #{remark}, </if>
+			<if test="sortNo != null">SORT_NO = #{sortNo}, </if>
+			UPDATE_TIME = #{updateTime}
+		</set>
+		where ROLE_ID = #{roleId}
+	</update>
+	
+	<delete id="delete" parameterType="java.lang.String" >
+		update PUB_ROLE set STATUS = -1 where ROLE_ID = #{roleId}
+	</delete>
+	
+	<delete id="deleteRoleUsers" parameterType="java.lang.String" >
+		delete from PUB_USER_R_ROLE WHERE ROLE_ID = #{roleId} and USER_ID = #{userId}
+	</delete>
+	
+	<delete id="deleteInBulk" parameterType="java.lang.String">
+		update PUB_ROLE set STATUS = -1 where ROLE_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</delete>
+	
+	<delete id="deleteUserRole" parameterType="java.lang.String">
+		delete from PUB_USER_R_ROLE  where USER_ID in 
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+			#{item}  
+		</foreach>
+	</delete>
+	
+	<select id="verifyRight" parameterType="java.lang.String" resultType="int">
+		select COUNT(1) from PUB_USER_R_ROLE where ROLE_ID in
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	
+	<select id="listUserRole" resultType="com.hdos.platform.base.role.model.RoleVO" parameterType="map">
+		select <include refid="Column_List" />
+    	from PUB_ROLE
+    	<include refid="Where_Clause_two" />
+    	ORDER BY UPDATE_TIME DESC
+	</select>
+	
+	<select id="listAll" resultType="com.hdos.platform.base.role.model.RoleVO" parameterType="map">
+	select <include refid="Column_List" />
+   	from PUB_ROLE
+   	where STATUS != -1
+   	ORDER BY UPDATE_TIME DESC
+	</select>
+	
+	<select id="listExcludeUserNoPage" resultType="com.hdos.platform.base.role.model.RoleVO" parameterType="map">
+		select <include refid="Column_List" />
+	   	from PUB_ROLE
+	   	<include refid="Where_Clause_two" />
+	   	ORDER BY UPDATE_TIME DESC
+	</select>
+	
+	<select id="listUserNoPage" resultType="com.hdos.platform.base.role.model.RoleVO" parameterType="map">
+		select <include refid="Column_List" />
+	   	from PUB_ROLE
+	   	where
+	    STATUS != -1 and ROLE_ID  IN (select ROLE_ID FROM PUB_USER_R_ROLE WHERE USER_ID = #{condition.userId})
+	   	ORDER BY UPDATE_TIME DESC
+	</select>
+	
+	<delete id="deleteAllRole" parameterType="java.lang.String" >
+		delete from PUB_USER_R_ROLE WHERE USER_ID = #{userId}
+	</delete>
+	
+</mapper>

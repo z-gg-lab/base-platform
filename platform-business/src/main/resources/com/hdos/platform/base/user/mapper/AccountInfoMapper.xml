@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hdos.platform.base.user.mapper.AccountInfoMapper">
+	
+	<sql id="Where_Clause">
+		<where>
+    		<if test="condition.userId != null">
+    			  USER_ID like CONCAT(CONCAT('%','${condition.userId}'),'%' ) 
+    		</if>
+    	</where>
+	</sql>
+	
+	<sql id="Column_List">
+		 PUB_USER.USER_ID, PUB_USER.STATUS, PUB_USER.CREATE_TIME, PUB_USER.UPDATE_TIME, PUB_USER.SORT_NO, NICK_NAME, USER_NAME, PUB_USER.TYPE, GENDER, PHONE, EMAIL, DESCRIPTION, PUB_ACCOUNT.USER_ACCOUNT, PWD, PUB_USER.DEPARTMENT_ID,DEPARTMENT_NAME ,USER_CODE
+
+	</sql>
+	<sql id="Column_List2">
+		USER_ID, STATUS, CREATE_TIME, UPDATE_TIME, SORT_NO, NICK_NAME, USER_NAME, TYPE, GENDER, PHONE, EMAIL, DESCRIPTION, DEPARTMENT_ID,USER_CODE
+	</sql>
+	
+	<select id="count" resultType="int" parameterType="map">
+		select COUNT(1)
+    	from PUB_USER
+    	<include refid="Where_Clause" />
+	</select>
+	
+	<select id="countSearchMerchant" resultType="int" parameterType="map">
+		select COUNT(1)
+    	from PUB_USER
+    	where USER_ID like CONCAT(CONCAT('%','${userId}'),'%' ) 
+	</select>
+	
+	<select id="listUser" resultType="com.hdos.platform.base.user.model.AccountInfoVO" parameterType="map">
+		select  PUB_USER.USER_ID, PUB_USER.STATUS, PUB_USER.CREATE_TIME, PUB_USER.UPDATE_TIME, PUB_USER.SORT_NO, NICK_NAME, USER_NAME, (SELECT PUB_CONFIG.NAME from PUB_CONFIG WHERE PUB_CONFIG.CONFIG_VALUE = PUB_USER.TYPE )TYPE, GENDER, PHONE, EMAIL, DESCRIPTION, PUB_ACCOUNT.USER_ACCOUNT, PWD, PUB_USER.DEPARTMENT_ID,DEPARTMENT_NAME ,USER_CODE
+    	from PUB_USER, PUB_ACCOUNT, PUB_DEPARTMENT
+    	where PUB_USER.USER_ID = PUB_ACCOUNT.USER_ID AND PUB_USER.DEPARTMENT_ID = PUB_DEPARTMENT.DEPARTMENT_ID and PUB_USER.DEPARTMENT_ID = #{parentId}
+    			  and PUB_USER.USER_ID = #{userId}
+	</select>
+	
+	<select id="searchUser" resultType="com.hdos.platform.base.user.model.AccountInfoVO" parameterType="map">
+		select  PUB_USER.USER_ID, PUB_USER.STATUS, PUB_USER.CREATE_TIME, PUB_USER.UPDATE_TIME, PUB_USER.SORT_NO, NICK_NAME, USER_NAME, (SELECT PUB_CONFIG.NAME from PUB_CONFIG WHERE PUB_CONFIG.CONFIG_VALUE = PUB_USER.TYPE )TYPE, GENDER, PHONE, EMAIL, DESCRIPTION, PUB_ACCOUNT.USER_ACCOUNT, PWD, PUB_USER.MERCHANT_ID,MERCHANT_NAME ,USER_CODE
+    	from PUB_USER, PUB_ACCOUNT, PROD_MERCHANT
+    	where PUB_USER.USER_ID = PUB_ACCOUNT.USER_ID AND PUB_USER.MERCHANT_ID = PROD_MERCHANT.MERCHANT_ID and PUB_USER.USER_ID = #{userId} and PUB_USER.MERCHANT_ID = #{parentId}
+	</select>
+	
+	<select id="searchUserDepartment" resultType="com.hdos.platform.base.user.model.AccountInfoVO" parameterType="map">
+		select  PUB_USER.USER_ID, PUB_USER.STATUS, PUB_USER.CREATE_TIME, PUB_USER.UPDATE_TIME, PUB_USER.SORT_NO, NICK_NAME, USER_NAME, (SELECT PUB_CONFIG.CONFIG_VALUE from PUB_CONFIG WHERE PUB_CONFIG.CONFIG_VALUE = PUB_USER.TYPE )TYPE, GENDER, PHONE, EMAIL, DESCRIPTION, PUB_ACCOUNT.USER_ACCOUNT, PWD, PUB_USER.DEPARTMENT_ID,DEPARTMENT_NAME,USER_CODE 
+    	from PUB_USER, PUB_ACCOUNT, PUB_DEPARTMENT
+    	where PUB_USER.USER_ID = PUB_ACCOUNT.USER_ID AND PUB_USER.DEPARTMENT_ID = PUB_DEPARTMENT.DEPARTMENT_ID and PUB_USER.DEPARTMENT_ID = #{condition.parentId}
+    			  and PUB_USER.USER_ACCOUNT like CONCAT(CONCAT('%','${condition.userAccount}'),'%' ) 
+	</select>
+	
+	<select id="searchUserMerchant" resultType="com.hdos.platform.base.user.model.AccountInfoVO" parameterType="map">
+		select  PUB_USER.USER_ID, PUB_USER.STATUS, PUB_USER.CREATE_TIME, PUB_USER.UPDATE_TIME, PUB_USER.SORT_NO, NICK_NAME, USER_NAME, TYPE, GENDER, PHONE, EMAIL, DESCRIPTION, PUB_ACCOUNT.USER_ACCOUNT, PWD, PUB_USER.MERCHANT_ID,MERCHANT_NAME,USER_CODE
+    	from PUB_USER, PUB_ACCOUNT, PROD_MERCHANT
+    	where PUB_USER.USER_ID = PUB_ACCOUNT.USER_ID AND PUB_USER.MERCHANT_ID = PROD_MERCHANT.MERCHANT_ID and PUB_USER.USER_ACCOUNT like CONCAT(CONCAT('%','${condition.userAccount}'),'%' )   and PUB_USER.MERCHANT_ID = #{condition.parentId}
+	</select>
+	
+	<select id="countByDepartmentId" resultType="int" parameterType="String">
+		select COUNT(1)
+    	from PUB_USER
+    	<where>
+		DEPARTMENT_ID = #{parentIds}
+		</where>
+	</select>
+	
+	<select id="countByMerchantId" resultType="int" parameterType="String">
+		select COUNT(1)
+    	from PUB_USER
+    	<where>
+		MERCHANT_ID = #{parentIds}
+		</where>
+	</select>
+	
+	<select id="listByDepartmentId" resultType="com.hdos.platform.base.user.model.AccountInfoVO" parameterType="String">
+		select  PUB_USER.USER_ID, PUB_USER.STATUS, PUB_USER.CREATE_TIME, PUB_USER.UPDATE_TIME, PUB_USER.SORT_NO, NICK_NAME, USER_NAME,PUB_USER.TYPE, GENDER, PHONE, EMAIL, DESCRIPTION, PUB_ACCOUNT.USER_ACCOUNT, PWD, PUB_USER.DEPARTMENT_ID,DEPARTMENT_NAME ,USER_CODE
+    	from PUB_USER, PUB_ACCOUNT, PUB_DEPARTMENT
+    	<where>
+		PUB_USER.USER_ID = PUB_ACCOUNT.USER_ID AND PUB_USER.DEPARTMENT_ID = PUB_DEPARTMENT.DEPARTMENT_ID and PUB_USER.DEPARTMENT_ID = #{parentIds}
+		</where>
+    	ORDER BY SORT_NO ASC, UPDATE_TIME DESC
+	</select>
+	
+	<select id="listByMerchantId" resultType="com.hdos.platform.base.user.model.AccountInfoVO" parameterType="String">
+		select  PUB_USER.USER_ID, PUB_USER.STATUS, PUB_USER.CREATE_TIME, PUB_USER.UPDATE_TIME, PUB_USER.SORT_NO, NICK_NAME, USER_NAME,PUB_USER.TYPE, GENDER, PHONE, EMAIL, DESCRIPTION, PUB_ACCOUNT.USER_ACCOUNT, PWD, PUB_USER.MERCHANT_ID,MERCHANT_NAME,USER_CODE 
+    	from PUB_USER, PUB_ACCOUNT, PROD_MERCHANT
+    	<where>
+		PUB_USER.USER_ID = PUB_ACCOUNT.USER_ID AND PUB_USER.MERCHANT_ID =PROD_MERCHANT.MERCHANT_ID and PUB_USER.MERCHANT_ID = #{parentIds}
+		</where>
+    	ORDER BY SORT_NO ASC, UPDATE_TIME DESC
+	</select>
+	
+	<select id="listByDepartmentId4Role" resultType="com.hdos.platform.base.user.model.AccountInfoVO" parameterType="String">
+		select  PUB_USER.USER_ID, PUB_USER.STATUS, PUB_USER.CREATE_TIME, PUB_USER.UPDATE_TIME, PUB_USER.SORT_NO, NICK_NAME, USER_NAME, GENDER, PHONE, EMAIL, DESCRIPTION, PUB_ACCOUNT.USER_ACCOUNT, PWD, PUB_USER.DEPARTMENT_ID,DEPARTMENT_NAME ,USER_CODE
+    	from PUB_USER, PUB_ACCOUNT, PUB_DEPARTMENT
+    	<where>
+		PUB_USER.USER_ID = PUB_ACCOUNT.USER_ID AND PUB_USER.DEPARTMENT_ID = PUB_DEPARTMENT.DEPARTMENT_ID and PUB_USER.DEPARTMENT_ID in 
+		<foreach item="item" index="index" collection="array" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		</where>
+    	ORDER BY SORT_NO ASC, UPDATE_TIME DESC
+	</select>
+	
+	
+	<!-->oracle中，not in ('')不能识别<-->
+	<select id="listByCondition" resultType="com.hdos.platform.base.user.model.AccountInfoVO" parameterType="Hashmap" >
+		select USER_ID, STATUS, CREATE_TIME, UPDATE_TIME, SORT_NO, NICK_NAME, USER_NAME, GENDER, PHONE, EMAIL, DESCRIPTION, USER_ACCOUNT, PWD, DEPARTMENT_ID,DEPARTMENT_NAME,USER_CODE
+    	 from(select  PUB_USER.USER_ID, PUB_USER.STATUS, PUB_USER.CREATE_TIME, PUB_USER.UPDATE_TIME, PUB_USER.SORT_NO, NICK_NAME, USER_NAME,  GENDER, PHONE, EMAIL, DESCRIPTION, PUB_ACCOUNT.USER_ACCOUNT, PWD, PUB_USER.DEPARTMENT_ID,DEPARTMENT_NAME ,USER_CODE
+    	from PUB_USER, PUB_ACCOUNT, PUB_DEPARTMENT
+    	where
+		PUB_USER.USER_ID = PUB_ACCOUNT.USER_ID AND PUB_USER.DEPARTMENT_ID = PUB_DEPARTMENT.DEPARTMENT_ID and PUB_USER.DEPARTMENT_ID = #{parentId} 
+		<if test="methodOfType == 'false'">and  PUB_USER.TYPE NOT IN
+		<foreach item="item" index="index" collection="type" open="(" separator="," close=")">
+			#{item}
+		</foreach></if> 
+		<if test="methodOfType == 'true'">and PUB_USER.TYPE IN 
+		<foreach item="item" index="index" collection="type" open="(" separator="," close=")">
+			#{item}
+		</foreach></if>
+    	ORDER BY SORT_NO ASC, UPDATE_TIME DESC) TMP 
+    	<if test="userIds!='-1'">
+    	where USER_ID not in 
+    	<foreach item="item" index="index" collection="userIds" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+    	</if>
+	</select>
+	
+	<select id="findByConditionKeywordAccountDepartment" resultType="com.hdos.platform.base.user.model.AccountInfoVO" parameterType="Hashmap" >
+		select USER_ID, STATUS, CREATE_TIME, UPDATE_TIME, SORT_NO, NICK_NAME, USER_NAME, GENDER, PHONE, EMAIL, DESCRIPTION, USER_ACCOUNT, PWD, DEPARTMENT_ID,DEPARTMENT_NAME,USER_CODE
+    	 from(select  PUB_USER.USER_ID, PUB_USER.STATUS, PUB_USER.CREATE_TIME, PUB_USER.UPDATE_TIME, PUB_USER.SORT_NO, NICK_NAME, USER_NAME,  GENDER, PHONE, EMAIL, DESCRIPTION, PUB_ACCOUNT.USER_ACCOUNT, PWD,PUB_USER.DEPARTMENT_ID,DEPARTMENT_NAME , USER_CODE
+    	from PUB_USER, PUB_ACCOUNT, PUB_DEPARTMENT
+    	where
+		PUB_USER.USER_ID = PUB_ACCOUNT.USER_ID AND PUB_USER.DEPARTMENT_ID = PUB_DEPARTMENT.DEPARTMENT_ID
+		<if test="methodOfType == 'false'">and  PUB_USER.TYPE NOT IN
+		<foreach item="item" index="index" collection="type" open="(" separator="," close=")">
+			#{item}
+		</foreach></if> 
+		<if test="methodOfType == 'true'">and PUB_USER.TYPE IN 
+		<foreach item="item" index="index" collection="type" open="(" separator="," close=")">
+			#{item}
+		</foreach></if>
+    	ORDER BY SORT_NO ASC, UPDATE_TIME DESC) TMP 
+    	
+    	where USER_ACCOUNT like CONCAT(CONCAT('%','${keywordAccount}'),'%' ) and USER_CODE like CONCAT(CONCAT('%','${keywordCode}'),'%' ) 
+    	<if test="userIds!='-1'">
+    	and USER_ID not in 
+    	<foreach item="item" index="index" collection="userIds" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+    	</if>
+	</select>
+	
+	<select id="findByConditionKeywordAccountMerchant" resultType="com.hdos.platform.base.user.model.AccountInfoVO" parameterType="Hashmap">
+		select USER_ID, STATUS, CREATE_TIME, UPDATE_TIME, SORT_NO, NICK_NAME, USER_NAME, GENDER, PHONE, EMAIL, DESCRIPTION, USER_ACCOUNT, PWD ,USER_CODE
+    	 from(select  PUB_USER.USER_ID, PUB_USER.STATUS, PUB_USER.CREATE_TIME, PUB_USER.UPDATE_TIME, PUB_USER.SORT_NO, NICK_NAME, USER_NAME, GENDER, PHONE, EMAIL, DESCRIPTION, PUB_ACCOUNT.USER_ACCOUNT, PWD, PUB_USER.MERCHANT_ID ,USER_CODE
+    	from PUB_USER, PUB_ACCOUNT,PROD_MERCHANT
+    	where
+		PUB_USER.USER_ID = PUB_ACCOUNT.USER_ID and PUB_USER.MERCHANT_ID = PROD_MERCHANT.MERCHANT_ID 
+		<if test="methodOfType == 'false'">and  PUB_USER.TYPE NOT IN
+		<foreach item="item" index="index" collection="type" open="(" separator="," close=")">
+			#{item}
+		</foreach></if> 
+		<if test="methodOfType == 'true'">and PUB_USER.TYPE IN 
+		<foreach item="item" index="index" collection="type" open="(" separator="," close=")">
+			#{item}
+		</foreach></if>
+    	ORDER BY SORT_NO ASC, UPDATE_TIME DESC) TMP 
+    	where USER_ACCOUNT like CONCAT(CONCAT('%','${keywordAccount}'),'%' )  and USER_CODE like CONCAT(CONCAT('%','${keywordCode}'),'%' ) 
+    	<if test="userIds!='-1'">
+    	and USER_ID not in 
+    	<foreach item="item" index="index" collection="userIds" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		</if>
+	</select>
+	
+	
+	<select id="findByConditionKeywordUserCodeDepartment" resultType="com.hdos.platform.base.user.model.AccountInfoVO" parameterType="Hashmap" >
+		select USER_ID, STATUS, CREATE_TIME, UPDATE_TIME, SORT_NO, NICK_NAME, USER_NAME, GENDER, PHONE, EMAIL, DESCRIPTION, USER_ACCOUNT, PWD, DEPARTMENT_ID,DEPARTMENT_NAME,USER_CODE
+    	 from(select  PUB_USER.USER_ID, PUB_USER.STATUS, PUB_USER.CREATE_TIME, PUB_USER.UPDATE_TIME, PUB_USER.SORT_NO, NICK_NAME, USER_NAME,  GENDER, PHONE, EMAIL, DESCRIPTION, PUB_ACCOUNT.USER_ACCOUNT, PWD,PUB_USER.DEPARTMENT_ID,DEPARTMENT_NAME , USER_CODE
+    	from PUB_USER, PUB_ACCOUNT, PUB_DEPARTMENT
+    	where
+		PUB_USER.USER_ID = PUB_ACCOUNT.USER_ID AND PUB_USER.DEPARTMENT_ID = PUB_DEPARTMENT.DEPARTMENT_ID
+		<if test="methodOfType == 'false'">and  PUB_USER.TYPE NOT IN
+		<foreach item="item" index="index" collection="type" open="(" separator="," close=")">
+			#{item}
+		</foreach></if> 
+		<if test="methodOfType == 'true'">and PUB_USER.TYPE IN 
+		<foreach item="item" index="index" collection="type" open="(" separator="," close=")">
+			#{item}
+		</foreach></if>
+    	ORDER BY SORT_NO ASC, UPDATE_TIME DESC) TMP 
+    	
+    	where USER_CODE like CONCAT(CONCAT('%','${keyword}'),'%' ) 
+    	<if test="userIds!='-1'">
+    	and USER_ID not in 
+    	<foreach item="item" index="index" collection="userIds" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+    	</if>
+	</select>
+	
+	<select id="findByConditionKeywordUserCodeMerchant" resultType="com.hdos.platform.base.user.model.AccountInfoVO" parameterType="Hashmap">
+		select USER_ID, STATUS, CREATE_TIME, UPDATE_TIME, SORT_NO, NICK_NAME, USER_NAME, GENDER, PHONE, EMAIL, DESCRIPTION, USER_ACCOUNT, PWD ,USER_CODE
+    	 from(select  PUB_USER.USER_ID, PUB_USER.STATUS, PUB_USER.CREATE_TIME, PUB_USER.UPDATE_TIME, PUB_USER.SORT_NO, NICK_NAME, USER_NAME, GENDER, PHONE, EMAIL, DESCRIPTION, PUB_ACCOUNT.USER_ACCOUNT, PWD, PUB_USER.MERCHANT_ID ,USER_CODE
+    	from PUB_USER, PUB_ACCOUNT,PROD_MERCHANT
+    	where
+		PUB_USER.USER_ID = PUB_ACCOUNT.USER_ID and PUB_USER.MERCHANT_ID = PROD_MERCHANT.MERCHANT_ID 
+		<if test="methodOfType == 'false'">and  PUB_USER.TYPE NOT IN
+		<foreach item="item" index="index" collection="type" open="(" separator="," close=")">
+			#{item}
+		</foreach></if> 
+		<if test="methodOfType == 'true'">and PUB_USER.TYPE IN 
+		<foreach item="item" index="index" collection="type" open="(" separator="," close=")">
+			#{item}
+		</foreach></if>
+    	ORDER BY SORT_NO ASC, UPDATE_TIME DESC) TMP 
+    	where USER_CODE like CONCAT(CONCAT('%','${keyword}'),'%' )
+    	<if test="userIds!='-1'">
+    	and USER_ID not in 
+    	<foreach item="item" index="index" collection="userIds" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		</if>
+	</select>
+	
+	
+	<select id="listByConditionMerchant" resultType="com.hdos.platform.base.user.model.AccountInfoVO" parameterType="Hashmap">
+		select USER_ID, STATUS, CREATE_TIME, UPDATE_TIME, SORT_NO, NICK_NAME, USER_NAME, GENDER, PHONE, EMAIL, DESCRIPTION, USER_ACCOUNT, PWD ,USER_CODE
+    	 from(select  PUB_USER.USER_ID, PUB_USER.STATUS, PUB_USER.CREATE_TIME, PUB_USER.UPDATE_TIME, PUB_USER.SORT_NO, NICK_NAME, USER_NAME, GENDER, PHONE, EMAIL, DESCRIPTION, PUB_ACCOUNT.USER_ACCOUNT, PWD, PUB_USER.MERCHANT_ID ,USER_CODE
+    	from PUB_USER, PUB_ACCOUNT
+    	where
+		PUB_USER.USER_ID = PUB_ACCOUNT.USER_ID and PUB_USER.MERCHANT_ID = #{parentId} 
+		<if test="methodOfType == 'false'">and  PUB_USER.TYPE NOT IN
+		<foreach item="item" index="index" collection="type" open="(" separator="," close=")">
+			#{item}
+		</foreach></if> 
+		<if test="methodOfType == 'true'">and PUB_USER.TYPE IN 
+		<foreach item="item" index="index" collection="type" open="(" separator="," close=")">
+			#{item}
+		</foreach></if>
+    	ORDER BY SORT_NO ASC, UPDATE_TIME DESC) TMP 
+    	<if test="userIds!='-1'">
+    	where USER_ID not in 
+    	<foreach item="item" index="index" collection="userIds" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+		</if>
+	</select>
+	
+	
+	<select id="findByConditionOfSelectdUserIds" resultType="com.hdos.platform.base.user.model.AccountInfoVO" parameterType="Hashmap">
+		select USER_ID, STATUS, CREATE_TIME, UPDATE_TIME, SORT_NO, NICK_NAME, USER_NAME, GENDER, PHONE, EMAIL, DESCRIPTION, USER_ACCOUNT, PWD, DEPARTMENT_ID,DEPARTMENT_NAME 
+    	 from(select  PUB_USER.USER_ID, PUB_USER.STATUS, PUB_USER.CREATE_TIME, PUB_USER.UPDATE_TIME, PUB_USER.SORT_NO, NICK_NAME, USER_NAME, GENDER, PHONE, EMAIL, DESCRIPTION, PUB_ACCOUNT.USER_ACCOUNT, PWD, PUB_USER.DEPARTMENT_ID,DEPARTMENT_NAME ,USER_CODE
+    	from PUB_USER, PUB_ACCOUNT, PUB_DEPARTMENT
+    	where
+		PUB_USER.USER_ID = PUB_ACCOUNT.USER_ID AND PUB_USER.DEPARTMENT_ID = PUB_DEPARTMENT.DEPARTMENT_ID and PUB_USER.DEPARTMENT_ID = #{parentId} 
+		<if test="methodOfType == 'false'">and  PUB_USER.TYPE not IN
+		<foreach item="item" index="index" collection="type" open="(" separator="," close=")">
+			#{item}
+		</foreach></if> 
+		<if test="methodOfType == 'true'">and PUB_USER.TYPE IN 
+		<foreach item="item" index="index" collection="type" open="(" separator="," close=")">
+			#{item}
+		</foreach></if>
+    	ORDER BY SORT_NO ASC, UPDATE_TIME DESC) TMP 
+    	where USER_ID in 
+    	<foreach item="item" index="index" collection="userIds" open="(" separator="," close=")">
+			#{item}
+		</foreach>
+	</select>
+	
+	<select id="findByConditionOfSelectdUserIdsMerchant" resultType="com.hdos.platform.base.user.model.AccountInfoVO" parameterType="Hashmap">
+		select USER_ID, STATUS, CREATE_TIME, UPDATE_TIME, SORT_NO, NICK_NAME, USER_NAME, GENDER, PHONE, EMAIL, DESCRIPTION, USER_ACCOUNT, PWD
+    	 from(select  PUB_USER.USER_ID, PUB_USER.STATUS, PUB_USER.CREATE_TIME, PUB_USER.UPDATE_TIME, PUB_USER.SORT_NO, NICK_NAME, USER_NAME, GENDER, PHONE, EMAIL, DESCRIPTION, PUB_ACCOUNT.USER_ACCOUNT, PWD, PUB_USER.MERCHANT_ID ,USER_CODE
+    	from PUB_USER, PUB_ACCOUNT
+    	where
+		PUB_USER.USER_ID = PUB_ACCOUNT.USER_ID and PUB_USER.MERCHANT_ID = #{parentId} 
+		<if test="methodOfType == 'false'">and  PUB_USER.TYPE NOT IN
+		<foreach item="item" index="index" collection="type" open="(" separator="," close=")">
+			#{item}
+		</foreach></if> 
+		<if test="methodOfType == 'true'">and PUB_USER.TYPE IN 
+		<foreach item="item" index="index" collection="type" open="(" separator="," close=")">
+			#{item}
+		</foreach></if>
+    	ORDER BY SORT_NO ASC, UPDATE_TIME DESC) TMP 
+    	where USER_ID in 
+    	<foreach item="item" index="index" collection="userIds" open="(" separator="," close=")">
+			#{item}
+		</foreach> 
+	</select>
+	
+	<select id="readAccountInfoById" resultType="com.hdos.platform.base.user.model.AccountInfoVO" parameterType="java.lang.String">
+		select  PUB_USER.USER_ID, PUB_USER.STATUS, PUB_USER.CREATE_TIME, PUB_USER.UPDATE_TIME, PUB_USER.SORT_NO, NICK_NAME, USER_NAME, TYPE, GENDER, PHONE, EMAIL, DESCRIPTION, PUB_ACCOUNT.USER_ACCOUNT, PWD, DEPARTMENT_ID,USER_CODE
+    	from PUB_USER, PUB_ACCOUNT
+    	where PUB_USER.USER_ID = PUB_ACCOUNT.USER_ID and PUB_USER.USER_ID = #{userId}
+	</select>
+	
+	<select id="findAll" resultType="com.hdos.platform.base.user.model.AccountInfoVO" parameterType="java.lang.String">
+		select  PUB_USER.USER_ID, PUB_USER.STATUS, PUB_USER.CREATE_TIME, PUB_USER.UPDATE_TIME, PUB_USER.SORT_NO, NICK_NAME, USER_NAME, TYPE, GENDER, PHONE, EMAIL, DESCRIPTION, PUB_ACCOUNT.USER_ACCOUNT, PWD, DEPARTMENT_ID,USER_CODE
+    	from PUB_USER, PUB_ACCOUNT
+    	where PUB_USER.USER_ID = PUB_ACCOUNT.USER_ID 
+	</select>
+	
+	<select id="getUserInfo" resultType="com.hdos.platform.base.user.model.AccountInfoVO" parameterType="java.lang.String">
+		select  USER_ID, DEPARTMENT_ID, MERCHANT_ID, USER_ACCOUNT
+		FROM PUB_USER
+    	where USER_ID = #{userId} 
+	</select>
+	
+	<select id="getUserIdByAccount" resultType="java.lang.String" parameterType="java.lang.String">
+		select  USER_ID
+		FROM PUB_USER
+    	where USER_ACCOUNT = #{account} 
+	</select>
+	
+	
+	<select id="getAccountFirst" resultType="java.lang.String">
+		select  USER_ACCOUNT
+		FROM PUB_USER
+    	LIMIT 1
+	</select>
+	
+</mapper>

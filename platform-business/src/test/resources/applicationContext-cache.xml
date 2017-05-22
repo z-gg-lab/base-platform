@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+	http://www.springframework.org/schema/beans/spring-beans-3.1.xsd"
+	default-lazy-init="false">
+
+	<description>redis Cache Config</description>
+
+	<bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+		<property name="maxIdle" value="${jedis.pool.maxIdle}" />
+		<property name="testOnBorrow" value="${jedis.pool.testOnBorrow}" />
+	</bean>
+	
+	<bean id="cacheJedis" class="com.hdos.platform.common.cache.impl.JedisCache">
+		<constructor-arg index="0" ref="jedisPool" />
+	</bean>
+	
+	<bean id="jedisPool" class="redis.clients.jedis.JedisPool">
+		<constructor-arg index="0" ref="jedisPoolConfig" />
+		<constructor-arg index="1" type="java.lang.String" value="${jedis.host}" />
+		<constructor-arg index="2" type="int" value="${jedis.port}" />
+	</bean>
+
+</beans>
